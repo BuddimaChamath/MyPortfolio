@@ -1,5 +1,7 @@
 {
-  "name": "magic-patterns-vite-template",
+  "name": "portfolio",
+  "description": "My portfolio website",
+  "author": "Buddima Chamath",
   "version": "0.0.1",
   "private": true,
   "type": "module",
