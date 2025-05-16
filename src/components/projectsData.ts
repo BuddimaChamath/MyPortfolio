@@ -58,7 +58,7 @@ export const projectsData: Record<string, Project> = {
     category: 'mobile',
     image: 'https://images.unsplash.com/photo-1570125909232-eb263c188f7e?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80',
     github: 'https://github.com/BuddimaChamath/publicTranspotationSystemforBuses.git',
-    demo: 'https://appetize.io/embed/b_psuplni3hbvjsiu4vhvterx36e',
+    demo: 'https://appetize.io/embed/b_rma43anq33jfj3kwobfwqzp56y',
     features: [
       'User App: Community News, Bus Search (via map and halt names), Fare Calculation, Bus Tracking, Bus Schedules',
       'Premium and Free Tier Plans for users',
@@ -89,7 +89,7 @@ export const projectsData: Record<string, Project> = {
     category: 'mobile',
     image: 'https://images.unsplash.com/photo-1542751371-adc38448a05e?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80',
     github: 'https://github.com/BuddimaChamath/GameDetailApp---Mobile-CW2.git',
-    demo: 'https://github.com/BuddimaChamath/GameDetailApp---Mobile-CW2',
+    //demo: 'https://github.com/BuddimaChamath/GameDetailApp---Mobile-CW2',
     features: [
       'Game detail screen showing release info, platform, and description using RAWG API to fetch data',
       'User registration and profile creation',
@@ -177,7 +177,7 @@ export const projectsData: Record<string, Project> = {
     category: 'mobile',
     image: 'https://images.unsplash.com/photo-1504711434969-e33886168f5c?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80',
     github: 'https://github.com/BuddimaChamath/NewsApp---CW1-Part-B',
-    demo: 'https://github.com/BuddimaChamath/FlutterNewsApp',
+    demo: 'https://appetize.io/embed/b_xtci5jjvbme7mhpy5sf67gydv4',
     features: [
       'Fetch and display top headlines using a news API',
       'Categorized news filtering (e.g., Health, Tech, Sports)',
