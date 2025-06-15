@@ -9,8 +9,14 @@ export const Footer = () => {
   const [initialViewportHeight, setInitialViewportHeight] = useState(0);
 
   useEffect(() => {
-    // Store initial viewport height
-    setInitialViewportHeight(window.innerHeight);
+    // Store initial viewport height - use visual viewport on iOS if available
+    const initialHeight = window.visualViewport ? window.visualViewport.height : window.innerHeight;
+    const initialScreenHeight = window.screen.height;
+    setInitialViewportHeight(initialHeight);
+
+    // Detect iOS
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || 
+                 (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
 
     const handleScroll = () => {
       const currentScrollY = window.scrollY;
@@ -31,56 +37,101 @@ export const Footer = () => {
       }
     };
 
-    const handleResize = () => {
-      const currentHeight = window.innerHeight;
-      const heightDifference = initialViewportHeight - currentHeight;
+    const checkKeyboardStatus = () => {
+      let currentHeight;
       
-      // If viewport height decreased significantly (likely keyboard), hide footer
-      // Threshold of 150px to account for browser UI changes
-      if (heightDifference > 150) {
+      if (window.visualViewport) {
+        // Use visual viewport API (more accurate for iOS)
+        currentHeight = window.visualViewport.height;
+      } else {
+        currentHeight = window.innerHeight;
+      }
+      
+      const heightDifference = initialHeight - currentHeight;
+      
+      // Different thresholds for iOS vs Android
+      const threshold = isIOS ? 100 : 150;
+      
+      if (heightDifference > threshold) {
         setIsKeyboardOpen(true);
       } else {
         setIsKeyboardOpen(false);
       }
     };
 
-    // Handle focus events on form inputs
+    const handleResize = () => {
+      checkKeyboardStatus();
+    };
+
+    const handleVisualViewportChange = () => {
+      if (window.visualViewport) {
+        checkKeyboardStatus();
+      }
+    };
+
+    // Handle focus events on form inputs - more aggressive for iOS
     const handleFocusIn = (e: FocusEvent) => {
-      if ((e.target as HTMLElement).tagName === 'INPUT' || (e.target as HTMLElement).tagName === 'TEXTAREA') {
-        // Small delay to allow keyboard to open
-        setTimeout(() => {
-          const currentHeight = window.innerHeight;
-          const heightDifference = initialViewportHeight - currentHeight;
-          if (heightDifference > 150) {
-            setIsKeyboardOpen(true);
-          }
-        }, 300);
+      if (
+        (e.target as HTMLElement).tagName === 'INPUT' ||
+        (e.target as HTMLElement).tagName === 'TEXTAREA'
+      ) {
+        // Immediately hide footer on focus for iOS
+        if (isIOS) {
+          setIsKeyboardOpen(true);
+        }
+        
+        // Multiple checks with different delays for iOS
+        const delays = isIOS ? [100, 200, 300, 500, 800] : [300];
+        
+        delays.forEach(delay => {
+          setTimeout(() => {
+            checkKeyboardStatus();
+          }, delay);
+        });
       }
     };
 
     const handleFocusOut = () => {
-      // Delay to allow keyboard to close
-      setTimeout(() => {
-        const currentHeight = window.innerHeight;
-        const heightDifference = initialViewportHeight - currentHeight;
-        if (heightDifference <= 150) {
-          setIsKeyboardOpen(false);
-        }
-      }, 300);
+      // Multiple delays for iOS keyboard close detection
+      const delays = isIOS ? [100, 300, 500, 800] : [300];
+      
+      delays.forEach(delay => {
+        setTimeout(() => {
+          checkKeyboardStatus();
+        }, delay);
+      });
     };
+
+    // iOS specific: Listen for visual viewport changes
+    if (window.visualViewport) {
+      window.visualViewport.addEventListener('resize', handleVisualViewportChange);
+    }
 
     window.addEventListener('scroll', handleScroll);
     window.addEventListener('resize', handleResize);
     document.addEventListener('focusin', handleFocusIn);
     document.addEventListener('focusout', handleFocusOut);
     
+    // iOS specific: Additional orientation change handler
+    window.addEventListener('orientationchange', () => {
+      setTimeout(() => {
+        const newInitialHeight = window.visualViewport ? window.visualViewport.height : window.innerHeight;
+        setInitialViewportHeight(newInitialHeight);
+        checkKeyboardStatus();
+      }, 500);
+    });
+    
     handleScroll(); // Call once to set initial state
     
     return () => {
+      if (window.visualViewport) {
+        window.visualViewport.removeEventListener('resize', handleVisualViewportChange);
+      }
       window.removeEventListener('scroll', handleScroll);
       window.removeEventListener('resize', handleResize);
       document.removeEventListener('focusin', handleFocusIn);
       document.removeEventListener('focusout', handleFocusOut);
+      window.removeEventListener('orientationchange', () => {});
     };
   }, [isKeyboardOpen, initialViewportHeight]);
 
