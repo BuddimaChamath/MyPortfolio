@@ -108,10 +108,10 @@ export const Footer = () => {
                 <h3 className={`text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-cyan-600 dark:from-blue-400 dark:via-purple-400 dark:to-cyan-400 bg-clip-text text-transparent mb-2 sm:mb-4 transition-all duration-700 ${
                   isVisible ? 'md:text-5xl lg:text-6xl transform scale-105' : ''
                 }`}>
-                  S.H.B.C. Kumara
+                  S.H.Buddima Chamath Kumara
                 </h3>
                 <p className="text-gray-600 dark:text-gray-400 font-medium text-sm sm:text-base md:text-lg">
-                  Software Engineer & Developer
+                  Software Engineer Undergraduate | Web Developer | Mobile App Developer 
                 </p>
               </div>
 
