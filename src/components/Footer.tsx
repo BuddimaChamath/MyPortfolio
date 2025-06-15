@@ -5,11 +5,19 @@ export const Footer = () => {
   const currentYear = new Date().getFullYear();
   const [scrollY, setScrollY] = useState(0);
   const [isVisible, setIsVisible] = useState(false);
+  const [isKeyboardOpen, setIsKeyboardOpen] = useState(false);
+  const [initialViewportHeight, setInitialViewportHeight] = useState(0);
 
   useEffect(() => {
+    // Store initial viewport height
+    setInitialViewportHeight(window.innerHeight);
+
     const handleScroll = () => {
       const currentScrollY = window.scrollY;
       setScrollY(currentScrollY);
+      
+      // Don't trigger footer animation if keyboard is open
+      if (isKeyboardOpen) return;
       
       // Get contact section position
       const contactSection = document.getElementById('contact');
@@ -23,11 +31,58 @@ export const Footer = () => {
       }
     };
 
+    const handleResize = () => {
+      const currentHeight = window.innerHeight;
+      const heightDifference = initialViewportHeight - currentHeight;
+      
+      // If viewport height decreased significantly (likely keyboard), hide footer
+      // Threshold of 150px to account for browser UI changes
+      if (heightDifference > 150) {
+        setIsKeyboardOpen(true);
+      } else {
+        setIsKeyboardOpen(false);
+      }
+    };
+
+    // Handle focus events on form inputs
+    const handleFocusIn = (e: FocusEvent) => {
+      if ((e.target as HTMLElement).tagName === 'INPUT' || (e.target as HTMLElement).tagName === 'TEXTAREA') {
+        // Small delay to allow keyboard to open
+        setTimeout(() => {
+          const currentHeight = window.innerHeight;
+          const heightDifference = initialViewportHeight - currentHeight;
+          if (heightDifference > 150) {
+            setIsKeyboardOpen(true);
+          }
+        }, 300);
+      }
+    };
+
+    const handleFocusOut = () => {
+      // Delay to allow keyboard to close
+      setTimeout(() => {
+        const currentHeight = window.innerHeight;
+        const heightDifference = initialViewportHeight - currentHeight;
+        if (heightDifference <= 150) {
+          setIsKeyboardOpen(false);
+        }
+      }, 300);
+    };
+
     window.addEventListener('scroll', handleScroll);
+    window.addEventListener('resize', handleResize);
+    document.addEventListener('focusin', handleFocusIn);
+    document.addEventListener('focusout', handleFocusOut);
+    
     handleScroll(); // Call once to set initial state
     
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      window.removeEventListener('resize', handleResize);
+      document.removeEventListener('focusin', handleFocusIn);
+      document.removeEventListener('focusout', handleFocusOut);
+    };
+  }, [isKeyboardOpen, initialViewportHeight]);
 
   const handleEmailClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
@@ -52,6 +107,9 @@ export const Footer = () => {
 
   // Calculate transform based on scroll position
   const getTransform = () => {
+    // Hide footer completely if keyboard is open
+    if (isKeyboardOpen) return 'translateY(100%)';
+    
     if (!isVisible) return 'translateY(100%)';
     
     const contactSection = document.getElementById('contact');
@@ -90,7 +148,7 @@ export const Footer = () => {
       >
         {/* Enhanced connection line */}
         <div className={`absolute top-0 left-0 right-0 h-3 bg-gradient-to-r from-blue-500 via-purple-500 to-cyan-500 transition-all duration-700 ${
-          isVisible ? 'opacity-100' : 'opacity-70'
+          isVisible && !isKeyboardOpen ? 'opacity-100' : 'opacity-70'
         }`}>
           <div className="absolute inset-0 bg-gradient-to-r from-blue-400 via-purple-400 to-cyan-400 animate-pulse"></div>
           {/* Add glowing effect */}
@@ -99,25 +157,25 @@ export const Footer = () => {
         
         <div className="w-full h-full px-4 sm:px-6 md:px-8 py-8 flex items-center justify-center overflow-hidden">
           <div className={`max-w-7xl mx-auto transition-all duration-1000 ${
-            isVisible ? 'transform scale-100 opacity-100' : 'transform scale-95 opacity-80'
+            isVisible && !isKeyboardOpen ? 'transform scale-100 opacity-100' : 'transform scale-95 opacity-80'
           }`}>
             <div className="flex flex-col items-center space-y-6 sm:space-y-8">
               
               {/* Brand/Logo Section with enhanced animation */}
               <div className="text-center">
                 <h3 className={`text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-cyan-600 dark:from-blue-400 dark:via-purple-400 dark:to-cyan-400 bg-clip-text text-transparent mb-2 sm:mb-4 transition-all duration-700 ${
-                  isVisible ? 'md:text-5xl lg:text-6xl transform scale-105' : ''
+                  isVisible && !isKeyboardOpen ? 'md:text-5xl lg:text-6xl transform scale-105' : ''
                 }`}>
-                  S.H.Buddima Chamath Kumara
+                  S.H.B.C. Kumara
                 </h3>
                 <p className="text-gray-600 dark:text-gray-400 font-medium text-sm sm:text-base md:text-lg">
-                  Software Engineer Undergraduate | Web Developer | Mobile App Developer 
+                  Software Engineer & Developer
                 </p>
               </div>
 
               {/* Social Links with enhanced hover effects */}
               <div className={`flex space-x-4 sm:space-x-6 md:space-x-8 transition-all duration-700 relative z-50 ${
-                isVisible ? 'space-x-6 sm:space-x-8 md:space-x-10 transform scale-110' : ''
+                isVisible && !isKeyboardOpen ? 'space-x-6 sm:space-x-8 md:space-x-10 transform scale-110' : ''
               }`}>
                 <button 
                   onClick={handleEmailClick}
@@ -167,7 +225,7 @@ export const Footer = () => {
 
               {/* Animated divider */}
               <div className={`w-full max-w-sm sm:max-w-md md:max-w-lg h-px bg-gradient-to-r from-transparent via-gray-300 dark:via-gray-600 to-transparent transition-all duration-700 ${
-                isVisible ? 'max-w-lg sm:max-w-xl md:max-w-2xl' : ''
+                isVisible && !isKeyboardOpen ? 'max-w-lg sm:max-w-xl md:max-w-2xl' : ''
               }`}></div>
 
               {/* Footer Text */}
@@ -188,7 +246,7 @@ export const Footer = () => {
 
               {/* Tech Stack Badge with scroll animation */}
               <div className={`flex flex-wrap justify-center gap-2 sm:gap-3 md:gap-4 text-xs sm:text-sm transition-all duration-700 ${
-                isVisible ? 'gap-3 sm:gap-4 md:gap-5 transform scale-105' : ''
+                isVisible && !isKeyboardOpen ? 'gap-3 sm:gap-4 md:gap-5 transform scale-105' : ''
               }`}>
                 <span className="px-3 py-1.5 sm:px-4 sm:py-2 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded-full font-medium hover:scale-110 transition-transform duration-200 shadow-md">
                   React
@@ -223,7 +281,7 @@ export const Footer = () => {
 
         {/* Floating particles effect */}
         <div className={`absolute inset-0 pointer-events-none transition-opacity duration-1000 ${
-          isVisible ? 'opacity-100' : 'opacity-0'
+          isVisible && !isKeyboardOpen ? 'opacity-100' : 'opacity-0'
         }`}>
           <div className="absolute top-16 left-1/4 w-2 h-2 bg-blue-400 rounded-full animate-bounce" style={{ animationDelay: '0s' }}></div>
           <div className="absolute top-24 right-1/4 w-1 h-1 bg-purple-400 rounded-full animate-bounce" style={{ animationDelay: '0.5s' }}></div>
