@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
-import { Github, FileText, Mail } from 'lucide-react';
+import { Github, FileText, Mail, Award } from 'lucide-react';
 import Typewriter from 'typewriter-effect/dist/core';
 
 // Import the image directly
@@ -13,7 +13,7 @@ export const Hero = () => {
   useEffect(() => {
     if (typewriterRef.current) {
       new Typewriter(typewriterRef.current, {
-        strings: ['Software Engineering Student', 'Flutter Developer', 'Java Enthusiast'],
+        strings: ['Software Engineering Graduate', 'First Class Honours Graduate', 'Flutter Developer', 'Java Enthusiast', 'Mobile App Developer'],
         autoStart: true,
         loop: true,
         delay: 75
@@ -159,7 +159,7 @@ export const Hero = () => {
           }}
           className="absolute top-2/6 left-0 text-lg font-mono text-green-600 dark:text-green-500"
         >
-          // Software Engineer Undergraduate
+          // Software Engineer - First Class Honours
         </motion.div>
 
         <motion.div
@@ -176,7 +176,7 @@ export const Hero = () => {
           }}
           className="absolute top-1/3 right-0 text-lg font-mono text-green-600 dark:text-green-500 whitespace-nowrap"
         >
-          // Flutter Developer 
+          // Kingston University Graduate 2025
         </motion.div>
       </div>
       
@@ -200,10 +200,25 @@ export const Hero = () => {
               S.H. Buddima Chamath Kumara
             </h1>
             <div className="text-xl md:text-2xl text-blue-600 dark:text-blue-400 mb-4" ref={typewriterRef} />
-            <p className="text-xl text-gray-600 dark:text-gray-300 mb-8">
-              BSc in Computing – Software Engineering student at Kingston
-              University via ESOFT Metro Campus
+            
+            {/* Achievement Badge */}
+            <motion.div 
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              transition={{ delay: 0.8, type: "spring", stiffness: 200 }}
+              className="flex items-center gap-2 bg-gradient-to-r from-yellow-400 to-orange-500 text-white px-4 py-2 rounded-full shadow-lg mb-6 w-fit"
+            >
+              <Award size={20} />
+              <span className="font-semibold text-sm">First Class Honours Graduate</span>
+            </motion.div>
+
+            <p className="text-xl text-gray-600 dark:text-gray-300 mb-2">
+              BSc (Hons) Computer Science - Software Engineering
             </p>
+            <p className="text-lg text-gray-500 dark:text-gray-400 mb-8">
+              Kingston University, London | Graduated July 2025
+            </p>
+            
             <div className="flex flex-wrap gap-4 relative z-10">
               <motion.button 
                 whileHover={{ scale: 1.05 }}
@@ -249,14 +264,28 @@ export const Hero = () => {
             }} 
             className="md:w-2/5 flex justify-center relative z-20"
           >
-            <div className="w-64 h-64 md:w-80 md:h-80 rounded-full bg-gradient-to-br from-blue-500 to-purple-500 p-1 shadow-xl">
-              <div className="w-full h-full rounded-full bg-white dark:bg-gray-800 overflow-hidden">
-                <img 
-                  src={profilePic} 
-                  alt="Buddima Chamath Kumara"
-                  className="w-full h-full object-cover"
-                />
+            <div className="relative">
+              <div className="w-64 h-64 md:w-80 md:h-80 rounded-full bg-gradient-to-br from-blue-500 via-purple-500 to-orange-500 p-1 shadow-xl">
+                <div className="w-full h-full rounded-full bg-white dark:bg-gray-800 overflow-hidden">
+                  <img 
+                    src={profilePic} 
+                    alt="Buddima Chamath Kumara - Software Engineering Graduate"
+                    className="w-full h-full object-cover"
+                  />
+                </div>
               </div>
+              
+              {/* Award badge positioned at 2 o'clock angle (45 degrees) */}
+              <motion.div
+                initial={{ scale: 0, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                transition={{ delay: 1.5, type: "spring", stiffness: 200 }}
+                className="absolute top-6 right-6 z-30"
+              >
+                <div className="w-14 h-14 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-full flex items-center justify-center shadow-lg border-3 border-white dark:border-gray-800">
+                  <Award size={22} className="text-white" />
+                </div>
+              </motion.div>
             </div>
           </motion.div>
         </div>
