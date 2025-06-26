@@ -20,7 +20,7 @@ export const About = () => {
             
             <p className="text-lg leading-relaxed text-gray-700 dark:text-gray-300 mb-6">
               I am a passionate Software Engineer with <strong>First Class Honours</strong> in Computer Science (Software Engineering) 
-              from Kingston University, London. Recently graduated in July 2025, I bring a strong foundation in software development 
+              from Kingston University, London. Graduation will be in August 2025, I bring a strong foundation in software development 
               principles, design patterns, and modern programming practices to create efficient, user-friendly applications that solve 
               real-world problems.
             </p>
@@ -53,7 +53,7 @@ export const About = () => {
                   </li>
                   <li className="flex items-start">
                     <span className="w-2 h-2 bg-blue-600 rounded-full mt-2 mr-3 flex-shrink-0"></span>
-                    <span>Graduated: June 2025</span>
+                    <span>Graduation: August 2025</span>
                   </li>
                 </ul>
               </div>

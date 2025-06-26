@@ -13,7 +13,7 @@ export const Hero = () => {
   useEffect(() => {
     if (typewriterRef.current) {
       new Typewriter(typewriterRef.current, {
-        strings: ['Software Engineering Graduate', 'First Class Honours Graduate', 'Flutter Developer', 'Java Enthusiast', 'Mobile App Developer'],
+        strings: ['Software Engineering Undergraduate', 'Flutter Developer', 'Java Enthusiast', 'Mobile App Developer'],
         autoStart: true,
         loop: true,
         delay: 75
@@ -159,7 +159,7 @@ export const Hero = () => {
           }}
           className="absolute top-2/6 left-0 text-lg font-mono text-green-600 dark:text-green-500"
         >
-          // Software Engineer - First Class Honours
+          // Software Engineer Undergraduate
         </motion.div>
 
         <motion.div
@@ -176,7 +176,7 @@ export const Hero = () => {
           }}
           className="absolute top-1/3 right-0 text-lg font-mono text-green-600 dark:text-green-500 whitespace-nowrap"
         >
-          // Kingston University Graduate 2025
+          // Flutter Developer | Java Enthusiast
         </motion.div>
       </div>
       
@@ -200,23 +200,12 @@ export const Hero = () => {
               S.H. Buddima Chamath Kumara
             </h1>
             <div className="text-xl md:text-2xl text-blue-600 dark:text-blue-400 mb-4" ref={typewriterRef} />
-            
-            {/* Achievement Badge */}
-            <motion.div 
-              initial={{ scale: 0 }}
-              animate={{ scale: 1 }}
-              transition={{ delay: 0.8, type: "spring", stiffness: 200 }}
-              className="flex items-center gap-2 bg-gradient-to-r from-yellow-400 to-orange-500 text-white px-4 py-2 rounded-full shadow-lg mb-6 w-fit"
-            >
-              <Award size={20} />
-              <span className="font-semibold text-sm">First Class Honours Graduate</span>
-            </motion.div>
 
             <p className="text-xl text-gray-600 dark:text-gray-300 mb-2">
               BSc (Hons) Computer Science - Software Engineering
             </p>
             <p className="text-lg text-gray-500 dark:text-gray-400 mb-8">
-              Kingston University, London | Graduated July 2025
+              Kingston University, London | Graduation will be in August 2025
             </p>
             
             <div className="flex flex-wrap gap-4 relative z-10">
@@ -275,17 +264,7 @@ export const Hero = () => {
                 </div>
               </div>
               
-              {/* Award badge positioned at 2 o'clock angle (45 degrees) */}
-              <motion.div
-                initial={{ scale: 0, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                transition={{ delay: 1.5, type: "spring", stiffness: 200 }}
-                className="absolute top-6 right-6 z-30"
-              >
-                <div className="w-14 h-14 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-full flex items-center justify-center shadow-lg border-3 border-white dark:border-gray-800">
-                  <Award size={22} className="text-white" />
-                </div>
-              </motion.div>
+              
             </div>
           </motion.div>
         </div>
