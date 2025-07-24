@@ -280,7 +280,7 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({
   };
 
   // Framer Motion drag handlers
-  const handleDragEnd = (event: any, info: PanInfo) => {
+  const handleDragEnd = (_event: any, info: PanInfo) => {
     const threshold = 100;
     
     if (Math.abs(info.offset.x) > threshold && project.screenshots?.length) {
