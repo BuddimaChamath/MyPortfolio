@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { motion, AnimatePresence, PanInfo } from 'framer-motion';
 import { 
   X, Github, ExternalLink, Calendar, Tag, 
   Users, Code, Check, Laptop, Smartphone, Globe,
@@ -41,22 +41,167 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({
 }) => {
   const [currentScreenshot, setCurrentScreenshot] = useState(0);
   const [showScreenshots, setShowScreenshots] = useState(false);
+  const [imageLoading, setImageLoading] = useState(false);
+  const modalRef = useRef<HTMLDivElement>(null);
+  
+  // Store original body styles to restore them properly
+  const originalBodyStyle = useRef({
+    overflow: '',
+    paddingRight: '',
+    position: '',
+    top: '',
+    width: ''
+  });
+  
+  // Touch/swipe handling
+  const [isDragging, setIsDragging] = useState(false);
+  const touchStartX = useRef(0);
+  const touchStartY = useRef(0);
 
-  // Body scroll lock effect
+  // Reset screenshot index when project changes
+  useEffect(() => {
+    if (project) {
+      setCurrentScreenshot(0);
+      setShowScreenshots(false);
+    }
+  }, [project]);
+
+  // Body scroll lock effect - MOBILE-OPTIMIZED VERSION
   useEffect(() => {
     if (isOpen) {
-      // Store original overflow style
-      const originalOverflow = document.body.style.overflow;
-      
-      // Lock body scroll
-      document.body.style.overflow = 'hidden';
-      
-      // Cleanup function to restore scroll when modal closes
-      return () => {
-        document.body.style.overflow = originalOverflow;
+      // Store original styles on first open
+      originalBodyStyle.current = {
+        overflow: document.body.style.overflow || '',
+        paddingRight: document.body.style.paddingRight || '',
+        position: document.body.style.position || '',
+        top: document.body.style.top || '',
+        width: document.body.style.width || ''
       };
+      
+      // Get current scroll position
+      const scrollY = window.scrollY;
+      
+      // For mobile devices, use position fixed to prevent scroll issues
+      const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+      
+      if (isMobile) {
+        // Mobile-specific scroll lock
+        document.body.style.position = 'fixed';
+        document.body.style.top = `-${scrollY}px`;
+        document.body.style.width = '100%';
+        document.body.style.overflow = 'hidden';
+      } else {
+        // Desktop scroll lock
+        const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
+        document.body.style.overflow = 'hidden';
+        document.body.style.paddingRight = `${scrollbarWidth}px`;
+      }
+      
+      // Store scroll position for restoration
+      document.body.setAttribute('data-scroll-y', scrollY.toString());
     }
+    
+    // Cleanup function - this is crucial
+    return () => {
+      if (originalBodyStyle.current) {
+        const scrollY = parseInt(document.body.getAttribute('data-scroll-y') || '0');
+        
+        // Restore original styles
+        document.body.style.overflow = originalBodyStyle.current.overflow;
+        document.body.style.paddingRight = originalBodyStyle.current.paddingRight;
+        document.body.style.position = originalBodyStyle.current.position;
+        document.body.style.top = originalBodyStyle.current.top;
+        document.body.style.width = originalBodyStyle.current.width;
+        
+        // Restore scroll position on mobile
+        if (scrollY > 0) {
+          window.scrollTo(0, scrollY);
+        }
+        
+        // Clean up attribute
+        document.body.removeAttribute('data-scroll-y');
+      }
+    };
   }, [isOpen]);
+
+  // Additional cleanup on component unmount - MOBILE SAFE
+  useEffect(() => {
+    return () => {
+      // Ensure body scroll is restored on component unmount
+      const scrollY = parseInt(document.body.getAttribute('data-scroll-y') || '0');
+      
+      document.body.style.overflow = '';
+      document.body.style.paddingRight = '';
+      document.body.style.position = '';
+      document.body.style.top = '';
+      document.body.style.width = '';
+      
+      if (scrollY > 0) {
+        window.scrollTo(0, scrollY);
+      }
+      
+      document.body.removeAttribute('data-scroll-y');
+    };
+  }, []);
+
+  // Enhanced onClose function to ensure proper cleanup
+  const handleClose = useCallback(() => {
+    const scrollY = parseInt(document.body.getAttribute('data-scroll-y') || '0');
+    
+    // Force restore body styles immediately
+    document.body.style.overflow = originalBodyStyle.current.overflow;
+    document.body.style.paddingRight = originalBodyStyle.current.paddingRight;
+    document.body.style.position = originalBodyStyle.current.position;
+    document.body.style.top = originalBodyStyle.current.top;
+    document.body.style.width = originalBodyStyle.current.width;
+    
+    // Restore scroll position on mobile
+    if (scrollY > 0) {
+      window.scrollTo(0, scrollY);
+    }
+    
+    // Clean up attribute
+    document.body.removeAttribute('data-scroll-y');
+    
+    // Reset modal state
+    setShowScreenshots(false);
+    setCurrentScreenshot(0);
+    setImageLoading(false);
+    
+    // Call parent onClose
+    onClose();
+  }, [onClose]);
+
+  // Keyboard navigation
+  const handleKeyDown = useCallback((e: KeyboardEvent) => {
+    if (!isOpen || !project?.screenshots?.length || !showScreenshots) {
+      if (e.key === 'Escape' && isOpen) {
+        handleClose();
+      }
+      return;
+    }
+    
+    switch (e.key) {
+      case 'ArrowLeft':
+        e.preventDefault();
+        prevScreenshot();
+        break;
+      case 'ArrowRight':
+        e.preventDefault();
+        nextScreenshot();
+        break;
+      case 'Escape':
+        handleClose();
+        break;
+    }
+  }, [isOpen, project, showScreenshots]);
+
+  useEffect(() => {
+    document.addEventListener('keydown', handleKeyDown);
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [handleKeyDown]);
 
   if (!project) return null;
 
@@ -72,6 +217,7 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({
   const nextScreenshot = () => {
     if (project.screenshots && project.screenshots.length > 0) {
       setCurrentScreenshot((prev) => (prev + 1) % (project.screenshots?.length || 1));
+      setImageLoading(true);
     }
   };
 
@@ -80,14 +226,81 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({
       setCurrentScreenshot((prev) => 
         prev === 0 ? (project.screenshots?.length || 1) - 1 : prev - 1
       );
+      setImageLoading(true);
+    }
+  };
+
+  // Touch handlers for swipe gestures - MOBILE OPTIMIZED
+  const handleTouchStart = (e: React.TouchEvent) => {
+    const touch = e.touches[0];
+    touchStartX.current = touch.clientX;
+    touchStartY.current = touch.clientY;
+    setIsDragging(false);
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (!touchStartX.current) return;
+    
+    const touch = e.touches[0];
+    const deltaX = Math.abs(touch.clientX - touchStartX.current);
+    const deltaY = Math.abs(touch.clientY - touchStartY.current);
+    
+    // Only consider horizontal swipes (more horizontal than vertical)
+    if (deltaX > deltaY && deltaX > 10) {
+      setIsDragging(true);
+      e.preventDefault(); // Prevent scrolling
+      e.stopPropagation(); // Prevent event bubbling
+    }
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    if (!touchStartX.current || !project.screenshots?.length) {
+      touchStartX.current = 0;
+      touchStartY.current = 0;
+      setIsDragging(false);
+      return;
+    }
+    
+    const touch = e.changedTouches[0];
+    const deltaX = touch.clientX - touchStartX.current;
+    const deltaY = Math.abs(touch.clientY - touchStartY.current);
+    
+    // Minimum swipe distance and ensure it's more horizontal than vertical
+    if (Math.abs(deltaX) > 50 && Math.abs(deltaX) > deltaY) {
+      if (deltaX > 0) {
+        prevScreenshot();
+      } else {
+        nextScreenshot();
+      }
+    }
+    
+    touchStartX.current = 0;
+    touchStartY.current = 0;
+    setIsDragging(false);
+  };
+
+  // Framer Motion drag handlers
+  const handleDragEnd = (event: any, info: PanInfo) => {
+    const threshold = 100;
+    
+    if (Math.abs(info.offset.x) > threshold && project.screenshots?.length) {
+      if (info.offset.x > 0) {
+        prevScreenshot();
+      } else {
+        nextScreenshot();
+      }
     }
   };
 
   // Handle backdrop click while preventing event bubbling
   const handleBackdropClick = (e: React.MouseEvent) => {
     if (e.target === e.currentTarget) {
-      onClose();
+      handleClose();
     }
+  };
+
+  const handleImageLoad = () => {
+    setImageLoading(false);
   };
 
   return (
@@ -103,12 +316,16 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({
             className="fixed inset-0 bg-black bg-opacity-50 z-40 backdrop-blur-sm"
           />
           
-          {/* Modal Container */}
+          {/* Modal Container - MOBILE OPTIMIZED */}
           <div 
             className="fixed inset-0 z-50 flex items-start justify-center p-4 md:p-8"
-            style={{ overscrollBehavior: 'contain' }}
+            style={{ 
+              overscrollBehavior: 'contain',
+              WebkitOverflowScrolling: 'touch' // iOS smooth scrolling
+            }}
           >
             <motion.div
+              ref={modalRef}
               initial={{ opacity: 0, y: 50, scale: 0.95 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: 50, scale: 0.95 }}
@@ -123,7 +340,7 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({
             >
               {/* Close button */}
               <button
-                onClick={onClose}
+                onClick={handleClose}
                 className="absolute top-4 right-4 z-10 p-2.5 rounded-full bg-black/70 hover:bg-black/80 text-white transition-all duration-200 backdrop-blur-sm hover:scale-105"
               >
                 <X size={20} />
@@ -201,44 +418,85 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({
                   </div>
                 </div>
 
-                {/* Screenshots Section */}
+                {/* Enhanced Screenshots Section */}
                 {project.screenshots && project.screenshots.length > 0 && (
                   <div className="mb-8">
                     <div className="flex items-center justify-between mb-4">
                       <h2 className="text-xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
                         <Camera size={20} className="text-blue-500" />
                         Screenshots
+                        <span className="text-sm font-normal text-gray-500 dark:text-gray-400 ml-2">
+                          ({project.screenshots.length} images)
+                        </span>
                       </h2>
-                      <button
-                        onClick={() => setShowScreenshots(!showScreenshots)}
-                        className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm"
-                      >
-                        {showScreenshots ? 'Hide' : 'View'} Screenshots
-                      </button>
+                      <div className="flex gap-2">
+                        <button
+                          onClick={() => setShowScreenshots(!showScreenshots)}
+                          className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm flex items-center gap-2"
+                        >
+                          <Camera size={16} />
+                          {showScreenshots ? 'Hide' : 'View'} Gallery
+                        </button>
+                      </div>
                     </div>
                     
                     {showScreenshots && (
                       <div className="space-y-4">
-                        {/* Main Screenshot Display */}
-                        <div className="relative bg-gray-100 dark:bg-gray-700 rounded-lg overflow-hidden">
-                          <img
-                            src={project.screenshots[currentScreenshot]}
-                            alt={`${project.title} screenshot ${currentScreenshot + 1}`}
-                            className="w-full h-96 md:h-[500px] object-contain"
-                          />
+                        {/* Navigation Instructions */}
+                        <div className="flex flex-wrap gap-4 text-xs text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-700/50 p-3 rounded-lg">
+                          <span className="hidden md:flex items-center gap-1">
+                            <kbd className="px-2 py-1 bg-gray-200 dark:bg-gray-600 rounded">←→</kbd> 
+                            Navigate
+                          </span>
+                          <span className="md:hidden">Swipe left/right to navigate</span>
+                          <span className="flex items-center gap-1">
+                            <Camera size={12} />
+                            Drag or use arrows to browse images
+                          </span>
+                        </div>
+                        
+                        {/* Main Screenshot Display - MOBILE OPTIMIZED */}
+                        <div className="relative bg-gray-100 dark:bg-gray-700 rounded-lg overflow-hidden group touch-pan-x">
+                          <motion.div
+                            className="relative select-none"
+                            drag="x"
+                            dragConstraints={{ left: 0, right: 0 }}
+                            dragElastic={0.2}
+                            onDragEnd={handleDragEnd}
+                            onTouchStart={handleTouchStart}
+                            onTouchMove={handleTouchMove}
+                            onTouchEnd={handleTouchEnd}
+                            whileTap={{ scale: 0.98 }}
+                            style={{ touchAction: 'pan-x' }} // Allow only horizontal panning
+                          >
+                            <div className="relative">
+                              {imageLoading && (
+                                <div className="absolute inset-0 flex items-center justify-center bg-gray-100 dark:bg-gray-700">
+                                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+                                </div>
+                              )}
+                              <img
+                                src={project.screenshots[currentScreenshot]}
+                                alt={`${project.title} screenshot ${currentScreenshot + 1}`}
+                                className="w-full h-96 md:h-[500px] object-contain transition-opacity duration-300"
+                                onLoad={handleImageLoad}
+                                style={{ opacity: imageLoading ? 0 : 1 }}
+                              />
+                            </div>
+                          </motion.div>
                           
                           {/* Navigation Arrows */}
                           {project.screenshots.length > 1 && (
                             <>
                               <button
                                 onClick={prevScreenshot}
-                                className="absolute left-4 top-1/2 transform -translate-y-1/2 p-2 bg-black/50 hover:bg-black/70 text-white rounded-full transition-colors"
+                                className="absolute left-4 top-1/2 transform -translate-y-1/2 p-2 bg-black/50 hover:bg-black/70 text-white rounded-full transition-all duration-200 opacity-0 group-hover:opacity-100 hover:scale-110"
                               >
                                 <ChevronLeft size={24} />
                               </button>
                               <button
                                 onClick={nextScreenshot}
-                                className="absolute right-4 top-1/2 transform -translate-y-1/2 p-2 bg-black/50 hover:bg-black/70 text-white rounded-full transition-colors"
+                                className="absolute right-4 top-1/2 transform -translate-y-1/2 p-2 bg-black/50 hover:bg-black/70 text-white rounded-full transition-all duration-200 opacity-0 group-hover:opacity-100 hover:scale-110"
                               >
                                 <ChevronRight size={24} />
                               </button>
@@ -246,31 +504,60 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({
                           )}
                           
                           {/* Screenshot Counter */}
-                          <div className="absolute bottom-4 right-4 px-3 py-1 bg-black/50 text-white text-sm rounded-full">
+                          <div className="absolute bottom-4 right-4 px-3 py-1 bg-black/50 text-white text-sm rounded-full backdrop-blur-sm">
                             {currentScreenshot + 1} / {project.screenshots.length}
                           </div>
+                          
+                          {/* Swipe indicator for mobile */}
+                          {isDragging && (
+                            <div className="absolute inset-0 bg-blue-500/10 flex items-center justify-center">
+                              <div className="bg-blue-500 text-white px-4 py-2 rounded-lg">
+                                Swipe to navigate
+                              </div>
+                            </div>
+                          )}
                         </div>
                         
-                        {/* Thumbnail Navigation */}
+                        {/* Enhanced Thumbnail Navigation */}
                         {project.screenshots.length > 1 && (
-                          <div className="flex gap-2 overflow-x-auto pb-2">
-                            {project.screenshots.map((screenshot, index) => (
-                              <button
-                                key={index}
-                                onClick={() => setCurrentScreenshot(index)}
-                                className={`flex-shrink-0 w-20 h-16 rounded-lg overflow-hidden border-2 transition-colors ${
-                                  index === currentScreenshot
-                                    ? 'border-blue-500'
-                                    : 'border-gray-300 dark:border-gray-600 hover:border-gray-400'
-                                }`}
-                              >
-                                <img
-                                  src={screenshot}
-                                  alt={`Thumbnail ${index + 1}`}
-                                  className="w-full h-full object-cover"
-                                />
-                              </button>
-                            ))}
+                          <div className="space-y-2">
+                            <div className="flex items-center justify-between">
+                              <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                All Screenshots
+                              </h4>
+                              <div className="text-xs text-gray-500 dark:text-gray-400">
+                                Click thumbnails to jump to image
+                              </div>
+                            </div>
+                            <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-thumb-gray-600">
+                              {project.screenshots.map((screenshot, index) => (
+                                <motion.button
+                                  key={index}
+                                  onClick={() => {
+                                    setCurrentScreenshot(index);
+                                    setImageLoading(true);
+                                  }}
+                                  whileHover={{ scale: 1.05 }}
+                                  whileTap={{ scale: 0.95 }}
+                                  className={`flex-shrink-0 w-20 h-16 rounded-lg overflow-hidden border-2 transition-all duration-200 relative ${
+                                    index === currentScreenshot
+                                      ? 'border-blue-500 shadow-lg ring-2 ring-blue-200 dark:ring-blue-800'
+                                      : 'border-gray-300 dark:border-gray-600 hover:border-gray-400 hover:shadow-md'
+                                  }`}
+                                >
+                                  <img
+                                    src={screenshot}
+                                    alt={`Thumbnail ${index + 1}`}
+                                    className="w-full h-full object-cover"
+                                  />
+                                  {index === currentScreenshot && (
+                                    <div className="absolute inset-0 bg-blue-500/20 flex items-center justify-center">
+                                      <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                                    </div>
+                                  )}
+                                </motion.button>
+                              ))}
+                            </div>
                           </div>
                         )}
                       </div>

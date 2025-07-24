@@ -13,7 +13,7 @@ export const Hero = () => {
   useEffect(() => {
     if (typewriterRef.current) {
       new Typewriter(typewriterRef.current, {
-        strings: ['Software Engineering Undergraduate', 'Flutter Developer', 'Java Enthusiast', 'Mobile App Developer'],
+        strings: ['Software Engineering Graduate', 'Mobile App Developer', 'Java Enthusiast', 'Web Developer'],
         autoStart: true,
         loop: true,
         delay: 75
@@ -159,7 +159,7 @@ export const Hero = () => {
           }}
           className="absolute top-2/6 left-0 text-lg font-mono text-green-600 dark:text-green-500"
         >
-          // Software Engineer Undergraduate
+          // Software Engineer Graduate
         </motion.div>
 
         <motion.div
@@ -200,12 +200,23 @@ export const Hero = () => {
               S.H. Buddima Chamath Kumara
             </h1>
             <div className="text-xl md:text-2xl text-blue-600 dark:text-blue-400 mb-4" ref={typewriterRef} />
+            
+            {/* Achievement Badge */}
+            <motion.div 
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              transition={{ delay: 0.8, type: "spring", stiffness: 200 }}
+              className="flex items-center gap-2 bg-gradient-to-r from-yellow-400 to-orange-500 text-white px-4 py-2 rounded-full shadow-lg mb-6 w-fit"
+            >
+              <Award size={20} />
+              <span className="font-semibold text-sm">First Class Honours Graduate</span>
+            </motion.div>
 
             <p className="text-xl text-gray-600 dark:text-gray-300 mb-2">
               BSc (Hons) Computer Science - Software Engineering
             </p>
             <p className="text-lg text-gray-500 dark:text-gray-400 mb-8">
-              Kingston University, London | Graduation will be in August 2025
+              Kingston University, London | Graduated June 2025
             </p>
             
             <div className="flex flex-wrap gap-4 relative z-10">
@@ -263,8 +274,6 @@ export const Hero = () => {
                   />
                 </div>
               </div>
-              
-              
             </div>
           </motion.div>
         </div>
