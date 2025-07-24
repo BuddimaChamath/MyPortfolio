@@ -1,11 +1,30 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   X, Github, ExternalLink, Calendar, Tag, 
   Users, Code, Check, Laptop, Smartphone, Globe,
-  UserCircle // Added for the contribution section
+  UserCircle, ChevronLeft, ChevronRight, Camera
 } from 'lucide-react';
-import { Project } from './projectsData'; // Import the Project interface from projectsData
+
+// Define Project interface (since we can't import from external files)
+interface Project {
+  id: string;
+  title: string;
+  description: string;
+  fullDescription?: string;
+  technologies: string[];
+  category: 'mobile' | 'desktop' | 'web';
+  github?: string;
+  demo?: string;
+  image?: string;
+  screenshots?: string[];
+  features?: string[];
+  team?: string;
+  duration?: string;
+  challenges?: string[];
+  solutions?: string[];
+  myContribution?: string[];
+}
 
 interface ProjectDetailModalProps {
   project: Project | null;
@@ -20,6 +39,25 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({
   onClose,
   theme
 }) => {
+  const [currentScreenshot, setCurrentScreenshot] = useState(0);
+  const [showScreenshots, setShowScreenshots] = useState(false);
+
+  // Body scroll lock effect
+  useEffect(() => {
+    if (isOpen) {
+      // Store original overflow style
+      const originalOverflow = document.body.style.overflow;
+      
+      // Lock body scroll
+      document.body.style.overflow = 'hidden';
+      
+      // Cleanup function to restore scroll when modal closes
+      return () => {
+        document.body.style.overflow = originalOverflow;
+      };
+    }
+  }, [isOpen]);
+
   if (!project) return null;
 
   const getCategoryIcon = (category: string) => {
@@ -28,6 +66,27 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({
       case 'desktop': return <Laptop size={20} className="text-green-500" />;
       case 'web': return <Globe size={20} className="text-purple-500" />;
       default: return null;
+    }
+  };
+
+  const nextScreenshot = () => {
+    if (project.screenshots && project.screenshots.length > 0) {
+      setCurrentScreenshot((prev) => (prev + 1) % (project.screenshots?.length || 1));
+    }
+  };
+
+  const prevScreenshot = () => {
+    if (project.screenshots && project.screenshots.length > 0) {
+      setCurrentScreenshot((prev) => 
+        prev === 0 ? (project.screenshots?.length || 1) - 1 : prev - 1
+      );
+    }
+  };
+
+  // Handle backdrop click while preventing event bubbling
+  const handleBackdropClick = (e: React.MouseEvent) => {
+    if (e.target === e.currentTarget) {
+      onClose();
     }
   };
 
@@ -40,33 +99,42 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            onClick={onClose}
+            onClick={handleBackdropClick}
             className="fixed inset-0 bg-black bg-opacity-50 z-40 backdrop-blur-sm"
           />
           
-          {/* Modal */}
-          <motion.div
-            initial={{ opacity: 0, y: 50, scale: 0.95 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 50, scale: 0.95 }}
-            transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-            className={`fixed inset-4 md:inset-24 z-50 overflow-y-auto ${theme === 'dark' ? 'bg-gray-800' : 'bg-white'} rounded-xl shadow-2xl`}
+          {/* Modal Container */}
+          <div 
+            className="fixed inset-0 z-50 flex items-start justify-center p-4 md:p-8"
+            style={{ overscrollBehavior: 'contain' }}
           >
-            <div className="relative max-w-6xl mx-auto">
+            <motion.div
+              initial={{ opacity: 0, y: 50, scale: 0.95 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: 50, scale: 0.95 }}
+              transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+              className={`relative w-full max-w-6xl max-h-full overflow-y-auto rounded-2xl shadow-2xl ${
+                theme === 'dark' ? 'bg-gray-800' : 'bg-white'
+              }`}
+              style={{ 
+                marginTop: '2vh',
+                marginBottom: '2vh'
+              }}
+            >
               {/* Close button */}
               <button
                 onClick={onClose}
-                className="absolute top-4 right-4 z-10 p-2 rounded-full bg-black/50 hover:bg-black/70 text-white transition-colors"
+                className="absolute top-4 right-4 z-10 p-2.5 rounded-full bg-black/70 hover:bg-black/80 text-white transition-all duration-200 backdrop-blur-sm hover:scale-105"
               >
-                <X size={24} />
+                <X size={20} />
               </button>
               
               {/* Project header/image */}
-              <div className="relative h-64 md:h-96">
+              <div className="relative h-64 md:h-80 rounded-t-2xl overflow-hidden">
                 <img 
                   src={project.image} 
                   alt={project.title} 
-                  className="w-full h-full object-cover rounded-t-xl"
+                  className="w-full h-full object-cover"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end">
                   <div className="p-6 md:p-8">
@@ -132,6 +200,83 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({
                     </div>
                   </div>
                 </div>
+
+                {/* Screenshots Section */}
+                {project.screenshots && project.screenshots.length > 0 && (
+                  <div className="mb-8">
+                    <div className="flex items-center justify-between mb-4">
+                      <h2 className="text-xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
+                        <Camera size={20} className="text-blue-500" />
+                        Screenshots
+                      </h2>
+                      <button
+                        onClick={() => setShowScreenshots(!showScreenshots)}
+                        className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm"
+                      >
+                        {showScreenshots ? 'Hide' : 'View'} Screenshots
+                      </button>
+                    </div>
+                    
+                    {showScreenshots && (
+                      <div className="space-y-4">
+                        {/* Main Screenshot Display */}
+                        <div className="relative bg-gray-100 dark:bg-gray-700 rounded-lg overflow-hidden">
+                          <img
+                            src={project.screenshots[currentScreenshot]}
+                            alt={`${project.title} screenshot ${currentScreenshot + 1}`}
+                            className="w-full h-96 md:h-[500px] object-contain"
+                          />
+                          
+                          {/* Navigation Arrows */}
+                          {project.screenshots.length > 1 && (
+                            <>
+                              <button
+                                onClick={prevScreenshot}
+                                className="absolute left-4 top-1/2 transform -translate-y-1/2 p-2 bg-black/50 hover:bg-black/70 text-white rounded-full transition-colors"
+                              >
+                                <ChevronLeft size={24} />
+                              </button>
+                              <button
+                                onClick={nextScreenshot}
+                                className="absolute right-4 top-1/2 transform -translate-y-1/2 p-2 bg-black/50 hover:bg-black/70 text-white rounded-full transition-colors"
+                              >
+                                <ChevronRight size={24} />
+                              </button>
+                            </>
+                          )}
+                          
+                          {/* Screenshot Counter */}
+                          <div className="absolute bottom-4 right-4 px-3 py-1 bg-black/50 text-white text-sm rounded-full">
+                            {currentScreenshot + 1} / {project.screenshots.length}
+                          </div>
+                        </div>
+                        
+                        {/* Thumbnail Navigation */}
+                        {project.screenshots.length > 1 && (
+                          <div className="flex gap-2 overflow-x-auto pb-2">
+                            {project.screenshots.map((screenshot, index) => (
+                              <button
+                                key={index}
+                                onClick={() => setCurrentScreenshot(index)}
+                                className={`flex-shrink-0 w-20 h-16 rounded-lg overflow-hidden border-2 transition-colors ${
+                                  index === currentScreenshot
+                                    ? 'border-blue-500'
+                                    : 'border-gray-300 dark:border-gray-600 hover:border-gray-400'
+                                }`}
+                              >
+                                <img
+                                  src={screenshot}
+                                  alt={`Thumbnail ${index + 1}`}
+                                  className="w-full h-full object-cover"
+                                />
+                              </button>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                )}
 
                 <div className="mb-8">
                   <h2 className="text-xl font-bold mb-4 text-gray-900 dark:text-white">Project Overview</h2>
@@ -227,8 +372,8 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({
                   )}
                 </div>
               </div>
-            </div>
-          </motion.div>
+            </motion.div>
+          </div>
         </>
       )}
     </AnimatePresence>

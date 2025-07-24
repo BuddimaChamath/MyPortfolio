@@ -15,6 +15,7 @@ export interface Project {
   challenges?: string[];
   solutions?: string[];
   myContribution?: string[];
+  screenshots?: string[];
 }
 
 // Export project data
@@ -57,6 +58,50 @@ export const projectsData: Record<string, Project> = {
     technologies: ['Flutter', 'Firebase', 'Dart', 'OpenRouteService API'],
     category: 'mobile',
     image: 'https://images.unsplash.com/photo-1570125909232-eb263c188f7e?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80',
+    screenshots: [
+      '../busApp/1.jpg',
+      '../busApp/2.jpg',
+      '../busApp/3.jpg',
+      '../busApp/4.jpg',
+      '../busApp/5.jpg',
+      '../busApp/6.jpg',
+      '../busApp/7.jpg',
+      '../busApp/8.jpg',
+      '../busApp/9.jpg',
+      '../busApp/10.jpg',
+      '../busApp/11.jpg',
+      '../busApp/12.jpg',
+      '../busApp/13.jpg',
+      '../busApp/14.jpg',
+      '../busApp/15.jpg',
+      '../busApp/16.jpg',
+      '../busApp/17.jpg',
+      '../busApp/18.jpg',
+      '../busApp/19.jpg',
+      '../busApp/20.jpg',
+      '../busApp/21.jpg',
+      '../busApp/22.jpg',
+      '../busApp/23.jpg',
+      '../busApp/24.jpg',
+      '../busApp/25.jpg',
+      '../busApp/26.jpg',
+      '../busApp/27.jpg',
+      '../busApp/28.jpg',
+      '../busApp/29.jpg',
+      '../busApp/30.jpg',
+      '../busApp/31.jpg',
+      '../busApp/32.jpg',
+      '../busApp/33.jpg',
+      '../busApp/34.jpg',
+      '../busApp/35.jpg',
+      '../busApp/36.jpg',
+      '../busApp/37.jpg',
+      '../busApp/38.jpg',
+      '../busApp/39.jpg',
+      '../busApp/40.jpg',
+      '../busApp/41.jpg',
+      '../busApp/42.jpg',
+    ],
     github: 'https://github.com/BuddimaChamath/publicTranspotationSystemforBuses.git',
     demo: 'https://appetize.io/embed/b_rma43anq33jfj3kwobfwqzp56y',
     features: [
