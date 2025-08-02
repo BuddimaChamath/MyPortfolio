@@ -9,7 +9,7 @@ import { Footer } from './components/Footer';
 import { BackToTop } from './components/BackToTop';
 import { ProjectDetailModal } from './components/ProjectDetailModal'; 
 import { motion, AnimatePresence } from 'framer-motion';
-import { projectsData, Project } from './components/projectsData'; // Import from the new file
+import { projectsData, Project } from './components/projectsData';
 
 export const App: React.FC = () => {
   const [theme, setTheme] = useState<'light' | 'dark'>('dark');
@@ -31,9 +31,21 @@ export const App: React.FC = () => {
     }
   };
   
-  // Function to close modal
+  // Enhanced function to close modal with proper cleanup
   const closeModal = (): void => {
+    // Force immediate body style cleanup
+    document.body.style.position = '';
+    document.body.style.top = '';
+    document.body.style.width = '';
+    document.body.style.overflow = '';
+    
+    // Close modal
     setIsModalOpen(false);
+    
+    // Reset selected project after a brief delay to allow animation
+    setTimeout(() => {
+      setSelectedProject(null);
+    }, 300);
   };
   
   // Check scroll position for back to top button
@@ -54,6 +66,16 @@ export const App: React.FC = () => {
     document.documentElement.classList.remove('light', 'dark');
     document.documentElement.classList.add(theme);
   }, [theme]);
+  
+  // Cleanup on component unmount - safety net
+  useEffect(() => {
+    return () => {
+      document.body.style.position = '';
+      document.body.style.top = '';
+      document.body.style.width = '';
+      document.body.style.overflow = '';
+    };
+  }, []);
   
   return (
     <AnimatePresence>
@@ -83,4 +105,4 @@ export const App: React.FC = () => {
       </motion.div>
     </AnimatePresence>
   );
-}
+};

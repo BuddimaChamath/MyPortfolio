@@ -136,6 +136,39 @@ export const projectsData: Record<string, Project> = {
       'Implemented reporting mechanism and content moderation for community safety'
     ]
   },
+  'lll-photography': {
+  id: 'lll-photography',
+  title: 'LLL Photography',
+  description: 'Modern photography portfolio website with elegant gallery layouts and responsive design.',
+  fullDescription: 'Developed a sophisticated photography portfolio website featuring elegant gallery layouts, responsive design, and smooth user interactions. The website showcases professional photography work with clean aesthetics, intuitive navigation, and optimized image loading for an exceptional viewing experience across all devices.',
+  technologies: ['React', 'TypeScript', 'Vite', 'CSS', 'Vercel'],
+  category: 'web',
+  image: '../LLL/image1.jpg',
+  demo: 'https://lll-photography.vercel.app/',
+  github: 'https://github.com/BuddimaChamath/lll-photography',
+  features: [
+    'Responsive gallery layouts with masonry and grid views',
+    'Optimized image loading and lazy loading implementation',
+    'Smooth animations and transitions for enhanced user experience',
+    'Mobile-first responsive design across all screen sizes',
+    'Clean and minimalist UI focused on showcasing photography',
+    'Fast loading times with Vite build optimization',
+    'SEO optimized for better search engine visibility'
+  ],
+  team: 'Client project - Solo development',
+  duration: '2-3 weeks',
+  challenges: [
+    'Implementing efficient image optimization for fast loading times',
+    'Creating responsive gallery layouts that work across all devices',
+    'Balancing visual appeal with performance optimization'
+  ],
+  solutions: [
+    'Built with Vite for fast development and optimized production builds',
+    'Used modern React hooks and TypeScript for type-safe development',
+    'Implemented CSS Grid and Flexbox for responsive gallery layouts',
+    'Applied modern web performance best practices for optimal user experience'
+  ]
+},
   'gaming-community': {
     id: 'gaming-community',
     title: 'Game Lounge - A PC Game Details and Gamer Community App',
@@ -172,6 +205,62 @@ export const projectsData: Record<string, Project> = {
       'Used Git for version control and collaboration',
       'Created API service layer for data normalization',
       'Implemented Firebase real-time database for chat functionality'
+    ]
+  },
+  'smart-campus-system': {
+    id: 'smart-campus-system',
+    title: 'Smart Campus Management System',
+    description: 'Web-based platform for university administration, resource management, and communication.',
+    fullDescription: 'The Smart Campus Management System is a web-based platform built to streamline university administration, resource allocation, scheduling, and communication between students, lecturers, and administrators. The system integrates learning and resource management into a single role-based platform with distinct dashboards for each user type. It enables real-time messaging, resource reservations, class/event scheduling, report generation, and file sharing.',
+    technologies: ['WAMP Stack', 'PHP', 'MySQL', 'HTML', 'CSS', 'JavaScript', 'Bootstrap', 'TCPDF', 'FullCalendar', 'AJAX', 'Figma'],
+    category: 'web',
+    image: '../SCM/image3.jpg',
+    screenshots: [
+      '../SCM/image3.jpg',
+      '../SCM/image6.jpg',
+      '../SCM/image1.jpg',
+      '../SCM/image4.jpg',
+      '../SCM/image5.jpg',
+      '../SCM/image2.jpg',
+      '../SCM/image7.jpg',
+      '../SCM/image8.jpg',
+      '../SCM/image9.jpg',
+      '../SCM/image10.jpg',
+      '../SCM/image11.jpg',
+    ],
+    github: 'https://github.com/BuddimaChamath/Smart_Campus-SDP-',
+    features: [
+      'Role-based dashboards for Admins, Lecturers, and Students',
+      'User management with secure authentication (registration, login, profile)',
+      'Class and event scheduling, calendar management, and notifications',
+      'Online resource reservation with conflict avoidance logic',
+      'File upload (lecturers) and download (students) functionality',
+      'Real-time messaging and email/SMS notifications',
+      'Reporting system for event participation (PDF export using TCPDF)',
+      'Fully responsive web design, accessible and scalable',
+      'Security features include RBAC, HTTPS, MD5 password hashing, input sanitization'
+    ],
+    team: 'Academic team project - 4 members',
+    duration: '4 months',
+    challenges: [
+      'Implementing secure role-based access control across multiple user types',
+      'Creating PDF generation system for dynamic reports',
+      'Building responsive interfaces for different devices and screen sizes',
+      'Ensuring secure file upload/download system with role-based permissions'
+    ],
+    solutions: [
+      'Utilized TCPDF library for dynamic PDF report generation',
+      'Implemented responsive design using Bootstrap and custom CSS',
+      'Created role-based security system with proper authentication and authorization',
+      'Built modular components for file handling with secure permissions'
+    ],
+    myContribution: [
+      'Developed event participation reporting system with PDF exports using TCPDF',
+      'Implemented email communication system for Admins to notify users',
+      'Created lecturer and student mail viewing components with role-based filtering',
+      'Built lecturer file upload and student file download interfaces',
+      'Styled application using custom CSS and ensured frontend responsiveness',
+      'Collaborated in agile sprints, participated in UI/UX prototyping using Figma'
     ]
   },
   'car-rental': {
@@ -266,49 +355,6 @@ export const projectsData: Record<string, Project> = {
       'Used Provider package for state management',
       'Implemented SQLite/Shared Preferences for bookmark storage',
       'Created adaptive layouts with Flutter\'s responsive design capabilities'
-    ]
-  },
-  'smart-campus-system': {
-    id: 'smart-campus-system',
-    title: 'Smart Campus Management System',
-    description: 'Web-based platform for university administration, resource management, and communication.',
-    fullDescription: 'The Smart Campus Management System is a web-based platform built to streamline university administration, resource allocation, scheduling, and communication between students, lecturers, and administrators. The system integrates learning and resource management into a single role-based platform with distinct dashboards for each user type. It enables real-time messaging, resource reservations, class/event scheduling, report generation, and file sharing.',
-    technologies: ['WAMP Stack', 'PHP', 'MySQL', 'HTML', 'CSS', 'JavaScript', 'Bootstrap', 'TCPDF', 'FullCalendar', 'AJAX', 'Figma'],
-    category: 'web',
-    image: 'https://images.unsplash.com/photo-1523050854058-8df90110c9f1?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80',
-    github: 'https://github.com/BuddimaChamath/Smart_Campus-SDP-',
-    features: [
-      'Role-based dashboards for Admins, Lecturers, and Students',
-      'User management with secure authentication (registration, login, profile)',
-      'Class and event scheduling, calendar management, and notifications',
-      'Online resource reservation with conflict avoidance logic',
-      'File upload (lecturers) and download (students) functionality',
-      'Real-time messaging and email/SMS notifications',
-      'Reporting system for event participation (PDF export using TCPDF)',
-      'Fully responsive web design, accessible and scalable',
-      'Security features include RBAC, HTTPS, MD5 password hashing, input sanitization'
-    ],
-    team: 'Academic team project - 4 members',
-    duration: '4 months',
-    challenges: [
-      'Implementing secure role-based access control across multiple user types',
-      'Creating PDF generation system for dynamic reports',
-      'Building responsive interfaces for different devices and screen sizes',
-      'Ensuring secure file upload/download system with role-based permissions'
-    ],
-    solutions: [
-      'Utilized TCPDF library for dynamic PDF report generation',
-      'Implemented responsive design using Bootstrap and custom CSS',
-      'Created role-based security system with proper authentication and authorization',
-      'Built modular components for file handling with secure permissions'
-    ],
-    myContribution: [
-      'Developed event participation reporting system with PDF exports using TCPDF',
-      'Implemented email communication system for Admins to notify users',
-      'Created lecturer and student mail viewing components with role-based filtering',
-      'Built lecturer file upload and student file download interfaces',
-      'Styled application using custom CSS and ensured frontend responsiveness',
-      'Collaborated in agile sprints, participated in UI/UX prototyping using Figma'
     ]
   }
 };

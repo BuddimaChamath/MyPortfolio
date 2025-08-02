@@ -8,11 +8,19 @@
 
 html {
   scroll-behavior: smooth;
+  /* Ensure proper touch behavior on mobile */
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
 }
 
 body {
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen,
     Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  /* Ensure normal scroll behavior by default */
+  overflow-x: hidden;
+  /* Prevent horizontal scroll issues */
+  touch-action: manipulation;
+  /* Improve touch responsiveness */
 }
 
 /* Dark mode styles */
@@ -23,4 +31,18 @@ body {
 /* Smooth transition between light and dark mode */
 * {
   transition: background-color var(--transition-duration), border-color var(--transition-duration);
+}
+
+/* Ensure modal container doesn't interfere with scroll */
+#root {
+  position: relative;
+  width: 100%;
+  min-height: 100vh;
+}
+
+/* Fix for iOS Safari scroll issues */
+@supports (-webkit-touch-callout: none) {
+  body {
+    -webkit-overflow-scrolling: touch;
+  }
 }
